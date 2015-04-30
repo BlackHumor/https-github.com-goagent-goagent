@@ -1846,6 +1846,13 @@ class AdvancedNet2(Net2):
                                 response.begin()
                         else:
                             response.begin()
+                        if hostname.endswith('.appspot.com') and 'Google' not in response.getheader('server'):
+                            self.ssl_connection_good_ipaddrs.pop(ipaddr, None)
+                            self.ssl_connection_bad_ipaddrs.pop(ipaddr, None)
+                            self.ssl_connection_unknown_ipaddrs.pop(ipaddr, None)
+                            self.iplist_alias.get(self.getaliasbyname('%s:%d' % (hostname, port))).remove(ipaddr[0])
+                            logging.warning('%r is not a vaild google ip, remove it', ipaddr)
+                            raise socket.timeout('timed out')
                     except gevent.Timeout:
                         ssl_sock.close()
                         raise socket.timeout('timed out')
@@ -1936,6 +1943,13 @@ class AdvancedNet2(Net2):
                                 response.begin()
                         else:
                             response.begin()
+                        if hostname.endswith('.appspot.com') and 'Google' not in response.getheader('server'):
+                            self.ssl_connection_good_ipaddrs.pop(ipaddr, None)
+                            self.ssl_connection_bad_ipaddrs.pop(ipaddr, None)
+                            self.ssl_connection_unknown_ipaddrs.pop(ipaddr, None)
+                            self.iplist_alias.get(self.getaliasbyname('%s:%d' % (hostname, port))).remove(ipaddr[0])
+                            logging.warning('%r is not a vaild google ip, remove it', ipaddr)
+                            raise socket.timeout('timed out')
                     except gevent.Timeout:
                         ssl_sock.close()
                         raise socket.timeout('timed out')
