@@ -193,7 +193,7 @@ class CertUtility(object):
         self.ca_keyfile = filename
         self.ca_thumbprint = ''
         self.ca_certdir = dirname
-        self.ca_digest = 'sha1' if sys.platform == 'win32' and sys.getwindowsversion() < (6,) else 'sha256'
+        self.ca_digest = 'sha256'
         self.ca_lock = threading.Lock()
 
     def create_ca(self):
@@ -216,7 +216,7 @@ class CertUtility(object):
         ca.set_issuer(req.get_subject())
         ca.set_subject(req.get_subject())
         ca.set_pubkey(req.get_pubkey())
-        ca.sign(key, 'sha1')
+        ca.sign(key, self.ca_digest)
         return key, ca
 
     def dump_ca(self):
@@ -379,7 +379,7 @@ class CertUtility(object):
                     logging.warning('self.remove_ca failed: %r', e)
             self.dump_ca()
         with open(capath, 'rb') as fp:
-            self.ca_thumbprint = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, fp.read()).digest('sha1')
+            self.ca_thumbprint = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, fp.read()).digest(self.ca_digest)
         #Check Certs
         certfiles = glob.glob(certdir+'/*.crt')+glob.glob(certdir+'/.*.crt')
         if certfiles:
