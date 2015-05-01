@@ -962,6 +962,8 @@ class MockFetchPlugin(BaseFetchPlugin):
         """mock response"""
         logging.info('%s "MOCK %s %s %s" %d %d', handler.address_string(), handler.command, handler.path, handler.protocol_version, status, len(body))
         headers = dict((k.title(), v) for k, v in headers.items())
+        if isinstance(body, unicode):
+            body = body.encode('utf8')
         if 'Transfer-Encoding' in headers:
             del headers['Transfer-Encoding']
         if 'Content-Length' not in headers:
@@ -1846,7 +1848,7 @@ class AdvancedNet2(Net2):
                                 response.begin()
                         else:
                             response.begin()
-                        if hostname.endswith('.appspot.com') and 'Google' not in response.getheader('server'):
+                        if hostname.endswith('.appspot.com') and 'Google' not in response.getheader('server', ''):
                             self.ssl_connection_good_ipaddrs.pop(ipaddr, None)
                             self.ssl_connection_bad_ipaddrs.pop(ipaddr, None)
                             self.ssl_connection_unknown_ipaddrs.pop(ipaddr, None)
@@ -1943,7 +1945,7 @@ class AdvancedNet2(Net2):
                                 response.begin()
                         else:
                             response.begin()
-                        if hostname.endswith('.appspot.com') and 'Google' not in response.getheader('server'):
+                        if hostname.endswith('.appspot.com') and 'Google' not in response.getheader('server', ''):
                             self.ssl_connection_good_ipaddrs.pop(ipaddr, None)
                             self.ssl_connection_bad_ipaddrs.pop(ipaddr, None)
                             self.ssl_connection_unknown_ipaddrs.pop(ipaddr, None)
